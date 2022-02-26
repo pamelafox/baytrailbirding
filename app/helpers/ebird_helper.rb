@@ -3,12 +3,12 @@ require 'json'
 include ActionView::Helpers::NumberHelper
 
 module EbirdHelper
-  def getBirdData(lat,lng, num_req=100, num_ret=1)
+  def getBirdData(lat,lng, num_req=1, num_ret=1)
     ebird_params = {  :lat => number_with_precision(lat, precision: 2),
                       :lng => number_with_precision(lng, precision: 2),
                       :maxResults => num_req,
-                      :back => 10,
-                      :dist => 25,
+                      :back => 30,
+                      :dist => 4,
                     }
 
     url = "https://api.ebird.org/v2/data/obs/geo/recent/"
