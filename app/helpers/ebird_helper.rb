@@ -3,7 +3,7 @@ require 'json'
 include ActionView::Helpers::NumberHelper
 
 module EbirdHelper
-  def getBirdData(lat,lng, num_req=100, num_ret=1)
+  def getBirdData(lat, lng, num_req=100, num_ret=1)
     ebird_params = {  :lat => number_with_precision(lat, precision: 2),
                       :lng => number_with_precision(lng, precision: 2),
                       :maxResults => num_req,
@@ -47,7 +47,7 @@ module EbirdHelper
         "lat": bird["lat"],
         "lng": bird["lng"],
         "private": bird["locationPrivate"],
-        "dist": number_with_precision(hav_distance([lat.to_f,lng.to_f], [ bird["lat"].to_f,bird["lng"].to_f], true), precision: 1)
+        "dist": number_with_precision(hav_distance([lat, lng], [bird["lat"], bird["lng"]], true), precision: 1)
       },
       # Observation data
       "obs": {
