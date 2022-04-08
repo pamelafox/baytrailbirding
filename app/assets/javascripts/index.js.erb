@@ -48,9 +48,16 @@ window.addEventListener('load', () => {
 	});
 	legend.onAdd = function(map) {
 		const div = L.DomUtil.create('div', 'legend');
-		div.innerHTML += '<img src="<%= image_path "map/marker-icon-2x-green.png" %>" height=41 width=25>Your Location<br>';
-		div.innerHTML += '<img src="<%= image_path "map/marker-icon-2x-gold.png" %>" height=41 width=25>Bird-Watching Park<br>';
-		div.innerHTML += '<img src="<%= image_path "map/marker-icon-2x-blue.png" %>" height=41 width=25>Recent Bird Sighting';
+		div.innerHTML = `
+			<img src="<%= image_path "map/marker-icon-2x-green.png" %>" height=41 width=25>
+			Your Location
+			<br>
+			<img src="<%= image_path "map/marker-icon-2x-gold.png" %>" height=41 width=25>
+			Bird-Watching Park
+			<br>
+			<img src="<%= image_path "map/marker-icon-2x-blue.png" %>" height=41 width=25>
+			Recent Bird Sighting
+		`;
 		div.style.background = 'silver';
 		return div;
 	};
@@ -58,33 +65,34 @@ window.addEventListener('load', () => {
 
 	function setContent(birddata, imgsrc, elem) {
 		$(elem).empty();
-		$(elem).append(
-			`
-      <img class="card-img-top" src="${imgsrc}">
-      <div class="card-body">
-        <h5 class="card-title">${birddata.comName}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">${birddata.sciName}</h6>
-        <p class="card-text">${birddata.distTo} miles away, at ${birddata.locName}</p>
-        <p class="card-text">reported ${moment(birddata.obsDt).fromNow()}</p>
-      </div>
-      <a href="https://ebird.org/species/${birddata.speciesCode}" class="btn btn-primary">View On Ebird</a>
-      `
-		);
+		$(elem).append(`
+			<img class="card-img-top" src="${imgsrc}">
+			<div class="card-body">
+				<h5 class="card-title">${birddata.comName}</h5>
+				<h6 class="card-subtitle mb-2 text-muted">${birddata.sciName}</h6>
+				<p class="card-text">${birddata.distTo} miles away, at ${birddata.locName}</p>
+				<p class="card-text">reported ${moment(birddata.obsDt).fromNow()}</p>
+			</div>
+			<a href="https://ebird.org/species/${birddata.speciesCode}" class="btn btn-primary">View On Ebird</a>
+		`);
 	}
 
 
 	function setContentLoc(i, birddata, imgsrc, elem) {
-		$(elem)[i].innerHTML
-      += `
-        <center>
-        <img class="card-img-top" src="${imgsrc}" style="width: 10rem; height: 10rem;">
-        </center>
-        <div class="card-body" style="padding: 0">
-          <a href="https://ebird.org/species/${birddata.speciesCode}"> <h5 class="card-title">${birddata.comName}</h5> </a>
-          <h6 class="card-subtitle mb-2 text-muted">${birddata.sciName}</h6>
-          <h6> <p>Last Seen: ${moment(birddata.obsDt).fromNow()}</p></h6>
-        </div>
-      `;
+		$(elem)[i].innerHTML += `
+			<center>
+				<img class="card-img-top" src="${imgsrc}" style="width: 10rem; height: 10rem;">
+			</center>
+			<div class="card-body" style="padding: 0">
+				<a href="https://ebird.org/species/${birddata.speciesCode}">
+					<h5 class="card-title">${birddata.comName}</h5>
+				</a>
+				<h6 class="card-subtitle mb-2 text-muted">${birddata.sciName}</h6>
+				<h6>
+					<p>Last Seen: ${moment(birddata.obsDt).fromNow()}</p>
+				</h6>
+			</div>
+		`;
 	}
 
 	function setMarker(birddata, index) {
@@ -96,7 +104,11 @@ window.addEventListener('load', () => {
 			}
 		);
 		mymap.addLayer(marker);
-		marker.bindPopup(`<b>${birddata.comName}</b><br/>${birddata.sciName}.`).openPopup();
+		marker.bindPopup(`
+			<b>${birddata.comName}</b>
+			<br/>
+			${birddata.sciName}.
+		`).openPopup();
 		marker.on('click', markerOnClick);
 		return marker;
 	}
@@ -111,11 +123,19 @@ window.addEventListener('load', () => {
 		);
 		mymap.addLayer(marker);
 		const urlLoc = locData.name.replace(/ /g, '+');
-		marker.bindPopup(`<center><b>${locData.name}</b></center>
-                      <br/><img src="${locData.picURL}" width=300 height=200>
-                      <br/> ${locData.short_desc}
-                      <br/><a href="${locData.websiteURL}">Website</a>
-                      <br/> <a href="https://www.google.com/maps/dir/?api=1&destination=${urlLoc}">Get Directions</a>`).openPopup();
+		marker.bindPopup(`
+			<center>
+				<b>${locData.name}</b>
+			</center>
+			<br/>
+			<img src="${locData.picURL}" width=300 height=200>
+			<br/>
+			${locData.short_desc}
+			<br/>
+			<a href="${locData.websiteURL}">Website</a>
+			<br/>
+			<a href="https://www.google.com/maps/dir/?api=1&destination=${urlLoc}">Get Directions</a>
+		`).openPopup();
 		marker.on('click', locMarkerOnClick);
 		return marker;
 	}
@@ -150,8 +170,7 @@ window.addEventListener('load', () => {
 			const birdImagesLoc = response.imgsrc;
 			const arrayLength = birdDataLoc.length;
 			$('#RecentBirdList #header').html(`<center>Birds To Look Out For At ${locName}:</center>`);
-			$('#RecentBirdList .scrolling-wrapper').html(
-				`<div class="card"></div>
+			$('#RecentBirdList .scrolling-wrapper').html(`
 				<div class="card"></div>
 				<div class="card"></div>
 				<div class="card"></div>
@@ -159,8 +178,9 @@ window.addEventListener('load', () => {
 				<div class="card"></div>
 				<div class="card"></div>
 				<div class="card"></div>
-				<div class="card"></div>`
-			);
+				<div class="card"></div>
+				<div class="card"></div>
+			`);
 			for (let i = 0; i < arrayLength; i++) {
 				setContentLoc(
 					i,
