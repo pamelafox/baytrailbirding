@@ -20,29 +20,52 @@ module EbirdHelper
 
     body = resp.body
 
+    body = JSON.parse(body)
 
-    bird_data = select_random_birds(JSON.parse(body),num_ret)
+    birds = select_random_birds(body,num_ret)
 
+    birds.map!{ |bird| format_bird(bird, lat, lng) }
 
-    #bird_data = addBirdDist(lat, lng, bird_data)
-    bird_data.each do |bird|
-      bird["distTo"] = number_with_precision(hav_distance([lat.to_f,lng.to_f],
-                                          [ bird["lat"].to_f,bird["lng"].to_f],
-                                          true), precision: 1);
-    end
-    return bird_data
+    return birds
 
+  end
+
+  def format_bird(bird, lat, lng)
+    {
+      # Identifiers
+      "speciesCode": bird["speciesCode"],
+      "subId": bird["subId"],
+      # Name data
+      "name": {
+        "sci": bird["sciName"],
+        "com": bird["comName"]
+      },
+      # Location data
+      "loc": {
+        "id": bird["locId"],
+        "name": bird["locName"],
+        "lat": bird["lat"],
+        "lng": bird["lng"],
+        "private": bird["locationPrivate"],
+        "dist": number_with_precision(hav_distance([lat.to_f,lng.to_f], [ bird["lat"].to_f,bird["lng"].to_f], true), precision: 1)
+      },
+      # Observation data
+      "obs": {
+        "date": bird["obsDt"],
+        "cnt": bird["howMany"],
+        "valid": bird["obsValid"],
+        "reviewed": bird["obsReviewed"]
+      },
+      # Get the image
+      # TODO: Cache this image data so that we don't need to requery wikipedia, you could probably use an id of the species code
+      "img": getImageSrc(bird)
+    }
   end
 
   #need to make new function to stub it dumb hate this
   def select_random_birds(birds, num_ret)
     birds.sample(num_ret)
   end
-
-  #def addBirdDist(lat,lng,bird_data)
-  #    bird_data.map {|x| haversine_distance_wrapper(x,3)}
-  #    haversine_distance(lat,lng,bird_data)
-  #end
 
   def hav_distance(geo_a, geo_b, miles=false)
     # Get latitude and longitude

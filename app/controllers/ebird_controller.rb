@@ -7,13 +7,9 @@ class EbirdController < ApplicationController
   def data
       lat = params[:lat]
       lng = params[:lng]
-      num_req = params[:num_req].to_i || 100
-      num_ret = params[:num_ret].to_i || 1
-      selected_birds = getBirdData(lat, lng, num_req, num_ret)
-      img_src = []
-      selected_birds.each { |bird_data|
-          img_src.append(getImageSrc(bird_data))
-      }
-      render :json => {'imgsrc':img_src,'birddata':selected_birds}
+      num_req = (params[:num_req] || 100).to_i
+      num_ret = (params[:num_ret] || 1).to_i
+      birds = getBirdData(lat, lng, num_req, num_ret)
+      render :json => birds
   end
 end
