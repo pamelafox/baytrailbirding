@@ -12,24 +12,24 @@
 
 window.addEventListener('load', () => {
 	const greenIcon = new L.Icon({
-		iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-		shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+		iconUrl: '<%= image_path "map/marker-icon-green.png" %>',
+		shadowUrl: '<%= image_path "map/marker-shadow.png" %>',
 		iconSize: [25, 41],
 		iconAnchor: [12, 41],
 		popupAnchor: [1, -34],
 		shadowSize: [41, 41]
 	});
 	const blueIcon = new L.Icon({
-		iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-		shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+		iconUrl: '<%= image_path "map/marker-icon-blue.png" %>',
+		shadowUrl: '<%= image_path "map/marker-shadow.png" %>',
 		iconSize: [25, 41],
 		iconAnchor: [12, 41],
 		popupAnchor: [1, -34],
 		shadowSize: [41, 41]
 	});
 	const yellowIcon = new L.Icon({
-		iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
-		shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+		iconUrl: '<%= image_path "map/marker-icon-yellow.png" %>',
+		shadowUrl: '<%= image_path "map/marker-shadow.png" %>',
 		iconSize: [25, 41],
 		iconAnchor: [12, 41],
 		popupAnchor: [1, -34],
@@ -48,9 +48,9 @@ window.addEventListener('load', () => {
 	});
 	legend.onAdd = function(map) {
 		const div = L.DomUtil.create('div', 'legend');
-		div.innerHTML += '<img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png" height=41 width=25>Your Location<br>';
-		div.innerHTML += '<img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png" height=41 width=25>Bird-Watching Park<br>';
-		div.innerHTML += '<img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png" height=41 width=25>Recent Bird Sighting';
+		div.innerHTML += '<img src="<%= image_path "map/marker-icon-2x-green.png" %>" height=41 width=25>Your Location<br>';
+		div.innerHTML += '<img src="<%= image_path "map/marker-icon-2x-gold.png" %>" height=41 width=25>Bird-Watching Park<br>';
+		div.innerHTML += '<img src="<%= image_path "map/marker-icon-2x-blue.png" %>" height=41 width=25>Recent Bird Sighting';
 		div.style.background = 'silver';
 		return div;
 	};
