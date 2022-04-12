@@ -3,12 +3,11 @@ require 'json'
 include ActionView::Helpers::NumberHelper
 
 module EbirdHelper
-  def getBirdData(lat, lng, num_req=100, num_ret=1)
+  def getBirdData(lat, lng, radius)
     ebird_params = {  :lat => number_with_precision(lat, precision: 2),
                       :lng => number_with_precision(lng, precision: 2),
-                      :maxResults => num_req,
                       :back => 10,
-                      :dist => 25,
+                      :dist => radius,
                     }
 
     url = "https://api.ebird.org/v2/data/obs/geo/recent/"
@@ -22,11 +21,9 @@ module EbirdHelper
 
     body = JSON.parse(body)
 
-    birds = select_random_birds(body,num_ret)
+    birds = select_random_birds(body, body.length())
 
-    birds.map!{ |bird| format_bird(bird, lat, lng) }
-
-    return birds
+    birds.select{ |bird| bird["howMany"].to_i > 1 }.map{ |bird| format_bird(bird, lat, lng) }
 
   end
 
@@ -58,7 +55,8 @@ module EbirdHelper
       },
       # Get the image
       # TODO: Cache this image data so that we don't need to requery wikipedia, you could probably use an id of the species code
-      "img": getImageSrc(bird)
+      #"img": getImageSrc(bird)
+      "img": nil
     }
   end
 
