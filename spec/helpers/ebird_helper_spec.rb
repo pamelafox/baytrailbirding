@@ -17,8 +17,8 @@ RSpec.describe EbirdHelper, type: :helper do
       VCR.use_cassette('ebird/get_bird_from_cords') do
         lat = 37.42.to_f
         lng = -121.91.to_f
-        bird = getBirdData(lat,lng,1,1).first;
-        expect(hav_distance([lat,lng],[bird["lat"],bird["lng"]],true)).to be <= 25
+        bird = getBirdData(lat,lng,25).first;
+        expect(hav_distance([lat,lng],[bird[:loc][:lat],bird[:loc][:lng]],true)).to be <= 25
       end
     end
   end
