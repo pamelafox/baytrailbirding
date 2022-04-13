@@ -5,12 +5,12 @@
 
 const MAX_RADIUS = 50;	// Radius distance in miles
 
-class Unit {
-	static mi2km = mi => mi * 1.609;
-	static mi2m = mi => this.mi2km(mi) * 1000;
-	static km2mi = km => km / 1.609;
-	static m2mi = m => this.km2mi(m / 1000);
-}
+const Unit = {
+	mi2km: mi => mi * 1.609,
+	mi2m: mi => Unit.mi2km(mi) * 1000,
+	km2mi: km => km / 1.609,
+	m2mi: m => Unit.km2mi(m / 1000)
+};
 
 class Ebird {
 	static getBirds(lat, lng, radius) {
@@ -53,17 +53,19 @@ class BirdMap {
 		const greenIcon = createIcon('<%= image_path "map/marker-icon-green.png" %>');
 		const blueIcon = createIcon('<%= image_path "map/marker-icon-blue.png" %>');
 		const yellowIcon = createIcon('<%= image_path "map/marker-icon-yellow.png" %>');
-		
+
 		const map = L.map(elementId).setView([37.42, -121.91], 13);
-		
+
 		L.tileLayer(tileLayerSource, {
 			maxZoom: 22,
 			subdomains: 'abcd',
 			accessToken: 'xqHgJRZT75Q1ORgEeGK3PlEI0pJ6AJFSe8atWNYCpgOGhvO3YTuckshNKOzFqpDP',
 			attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
-	
-		const legend = L.control({ position: 'topright' });
+
+		const legend = L.control({
+			position: 'topright'
+		});
 		legend.onAdd = () => {
 			const div = L.DomUtil.create('div', 'legend');
 			div.innerHTML = `
@@ -78,9 +80,9 @@ class BirdMap {
 			`;
 			div.style.background = 'silver';
 			return div;
-		}
+		};
 		legend.addTo(map);
-	
+
 		this.map = map;
 
 		this.icons = {
@@ -107,13 +109,13 @@ class BirdMap {
 			this.markers.on('clusterclick', () => {
 				$('.overlay').attr('hidden', '');
 			});
-	
+
 			this.selected = null;
-	
+
 			this.map.on('moveend', () => this.loadBirds());
-	
+
 			this.map.addLayer(this.markers);
-	
+
 			this.loadBirds();
 		});
 
@@ -121,7 +123,9 @@ class BirdMap {
 	}
 
 	async loadBirds() {
-		const { lat, lng } = this.getCurrPosition();
+		const {
+			lat, lng
+		} = this.getCurrPosition();
 		const birds = await Ebird.getBirds(lat, lng, this.getRadius());
 		const bounds = this.map.getBounds();
 		const markers = birds
@@ -129,7 +133,7 @@ class BirdMap {
 			.map(bird => this.createBird(bird.loc.latLng, bird));
 
 		markers.forEach(marker => {
-			const alreadyExists = this.markers.getLayers().find(mapMarker => mapMarker.birdId === marker.birdId)
+			const alreadyExists = this.markers.getLayers().find(mapMarker => mapMarker.birdId === marker.birdId);
 			if (!alreadyExists) this.markers.addLayer(marker);
 		});
 	}
@@ -139,7 +143,7 @@ class BirdMap {
 			icon,
 			riseOnHover: true
 		});
-		
+
 		marker.on('click', () => {
 			const position = marker.getLatLng();
 			this.setCurrPosition(position);
@@ -157,7 +161,7 @@ class BirdMap {
 
 		const marker = this.createMarker(latLng, icon);
 
-		marker.birdId = bird.subId
+		marker.birdId = bird.subId;
 
 		marker.on('click', () => {
 			$('.overlay').html(`
@@ -181,7 +185,7 @@ class BirdMap {
 			  </div>
 			</div>
 			`)
-			.removeAttr('hidden');
+				.removeAttr('hidden');
 		});
 
 		return marker;
@@ -189,13 +193,14 @@ class BirdMap {
 
 	setCurrPosition(latLng) {
 		this.map.panToOffset(latLng, [window.innerWidth / 4, 0]);
-		// this.map.panTo(latLng);
+
+		// This.map.panTo(latLng);
 	}
-	
+
 	getCurrPosition() {
 		return this.map.getCenter();
 	}
-	
+
 	getRadius() {
 		const bounds = this.map.getBounds();
 		const ne = bounds.getNorthEast();
@@ -209,14 +214,13 @@ class BirdMap {
 }
 
 class GPS {
-
 	constructor() {
 		this.watchId = null;
 	}
 
 	getCurrentPosition(defaultLat, defaultLng) {
 		const defaultPosition = L.latLng(defaultLat, defaultLng);
-		
+
 		const options = {
 			enableHighAccuracy: true,
 			timeout: 5000,
@@ -226,16 +230,21 @@ class GPS {
 		return new Promise(resolve => {
 			navigator.geolocation.getCurrentPosition(
 				position => {
-					const { coords } = position;
-					const { latitude, longitude } = coords;
-					
+					const {
+						coords
+					} = position;
+					const {
+						latitude, longitude
+					} = coords;
+
 					resolve(L.latLng(latitude, longitude));
 				},
 				() => resolve(defaultPosition),
 				options
 			);
 		});
- 	}
+	}
+
 	watchCurrentPosition(onPosChange) {
 		const defaultPosition = L.latLng(defaultLat, defaultLng);
 
@@ -247,9 +256,13 @@ class GPS {
 
 		const watchId = navigator.geolocation.watchPosition(
 			position => {
-				const { coords } = position;
-				const { latitude, longitude } = coords;
-				
+				const {
+					coords
+				} = position;
+				const {
+					latitude, longitude
+				} = coords;
+
 				onPosChange(L.latLng(latitude, longitude));
 			},
 			() => onPosChange(defaultPosition),
@@ -273,15 +286,15 @@ let mymap = null;
 let gps = null;
 
 window.addEventListener('load', async () => {
-
-	L.Map.prototype.panToOffset = function (latlng, offset, options) {
+	L.Map.prototype.panToOffset = function(latlng, offset, options) {
 		const x = this.latLngToContainerPoint(latlng).x - offset[0];
 		const y = this.latLngToContainerPoint(latlng).y - offset[1];
 		const point = this.containerPointToLatLng([x, y]);
-		return this.setView(point, this._zoom, { pan: options });
-	}
+		return this.setView(point, this.getZoom(), {
+			pan: options
+		});
+	};
 
 	gps = new GPS();
 	mymap = new BirdMap('leaflet-map', await gps.getCurrentPosition(37.8039, -122.2591));
-
 });
