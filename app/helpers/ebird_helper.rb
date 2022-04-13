@@ -27,6 +27,29 @@ module EbirdHelper
 
   end
 
+  def getHotspotData(lat, lng, radius)
+    ebird_params = {  :lat => number_with_precision(lat, precision: 2),
+                      :lng => number_with_precision(lng, precision: 2),
+                      :back => 10,
+                      :dist => radius,
+                      :fmt => "json"
+                    }
+
+    url = "https://api.ebird.org/v2/ref/hotspot/geo"
+
+    resp = Faraday.get(url) do |req|
+      req.params = ebird_params
+      req.headers = {"X-eBirdApiToken" => "3nt7houcf01l"}
+    end
+
+    body = resp.body
+
+    hotspots = JSON.parse(body)
+
+    return hotspots.map{|hotspot| format_hotspot(hotspot)}
+
+  end
+
   def format_bird(bird, lat, lng)
     {
       # Identifiers
@@ -57,6 +80,26 @@ module EbirdHelper
       # TODO: Cache this image data so that we don't need to requery wikipedia, you could probably use an id of the species code
       #"img": getImageSrc(bird)
       "img": nil
+    }
+  end
+
+  def format_hotspot(hotspot)
+    {
+      "loc": {
+        "id": hotspot["locId"],
+        "name": hotspot["locName"],
+        "lat": hotspot["lat"],
+        "lng": hotspot["lng"]
+      },
+      "code": {
+        "country": hotspot["countryCode"],
+        "subnat1": hotspot["subnational1Code"],
+        "subnat2": hotspot["subnational2Code"]
+      },
+      "obs": {
+        "date": hotspot["latestObsDt"]
+      },
+      "cnt": hotspot["numSpeciesAllTime"]
     }
   end
 
