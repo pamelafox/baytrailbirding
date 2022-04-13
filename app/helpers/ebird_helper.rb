@@ -27,6 +27,28 @@ module EbirdHelper
 
   end
 
+  def getHotspotBirdData(hotspot)
+    ebird_params = {
+                      :back => 10,
+                    }
+
+    url = "https://api.ebird.org/v2/data/obs/#{hotspot}/recent/"
+
+    resp = Faraday.get(url) do |req|
+      req.params = ebird_params
+      req.headers = {"X-eBirdApiToken" => "3nt7houcf01l"}
+    end
+
+    body = resp.body
+
+    body = JSON.parse(body)
+
+    birds = select_random_birds(body, body.length())
+
+    birds.map{ |bird| format_bird(bird, 0.to_f, 0.to_f) }
+
+  end
+
   def getHotspotData(lat, lng, radius)
     ebird_params = {  :lat => number_with_precision(lat, precision: 2),
                       :lng => number_with_precision(lng, precision: 2),

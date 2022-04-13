@@ -8,7 +8,13 @@ class EbirdController < ApplicationController
     lat = params[:lat].to_f
     lng = params[:lng].to_f
     radius = (params[:radius] || 50).to_i
-    birds = getBirdData(lat, lng, radius);
+    hotspot = params[:hotspot]
+    birds = []
+    if hotspot
+      birds = getHotspotBirdData(hotspot);
+    else
+      birds = getBirdData(lat, lng, radius);
+    end
     render :json => birds
   end
   def bird
@@ -23,7 +29,7 @@ class EbirdController < ApplicationController
     lat = params[:lat].to_f
     lng = params[:lng].to_f
     radius = (params[:radius] || 50).to_i
-    birds = getHotspotData(lat, lng, radius);
-    render :json => birds
+    hotspots = getHotspotData(lat, lng, radius);
+    render :json => hotspots
   end
 end
