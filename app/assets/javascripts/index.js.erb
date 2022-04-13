@@ -9,7 +9,7 @@ class Unit {
 	static mi2km = mi => mi * 1.609;
 	static mi2m = mi => this.mi2km(mi) * 1000;
 	static km2mi = km => km / 1.609;
-	static m2mi = m => this.km2mi(m * 1000);
+	static m2mi = m => this.km2mi(m / 1000);
 }
 
 class Ebird {
@@ -48,7 +48,7 @@ class BirdMap {
 			shadowSize: [41, 41]
 		});
 
-		const tileLayerSource = 'https://a.tiles.mapbox.com/styles/v1/lohneswright/ciocejooj006obdnjhmd2x9qp/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9obmVzd3JpZ2h0IiwiYSI6IngzbVlqNnMifQ.OwxjrBKoGXc60NB5x6GKzw';
+		const tileLayerSource = 'https://{s}.tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token={accessToken}';
 
 		const greenIcon = createIcon('<%= image_path "map/marker-icon-green.png" %>');
 		const blueIcon = createIcon('<%= image_path "map/marker-icon-blue.png" %>');
@@ -56,7 +56,12 @@ class BirdMap {
 		
 		const map = L.map(elementId).setView([37.42, -121.91], 13);
 		
-		L.tileLayer(tileLayerSource, { maxZoom: 22 }).addTo(map);
+		L.tileLayer(tileLayerSource, {
+			maxZoom: 22,
+			subdomains: 'abcd',
+			accessToken: 'xqHgJRZT75Q1ORgEeGK3PlEI0pJ6AJFSe8atWNYCpgOGhvO3YTuckshNKOzFqpDP',
+			attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+		}).addTo(map);
 	
 		const legend = L.control({ position: 'topright' });
 		legend.onAdd = () => {
@@ -85,6 +90,7 @@ class BirdMap {
 		};
 
 		this.position = currentPosition;
+
 		this.map.panTo(currentPosition);
 
 		const km = MAX_RADIUS * 1000;
@@ -97,6 +103,10 @@ class BirdMap {
 			this.map.setMinZoom(this.map.getZoom());
 
 			this.markers = L.markerClusterGroup();
+
+			this.markers.on('clusterclick', () => {
+				$('.overlay').attr('hidden', '');
+			});
 	
 			this.selected = null;
 	
@@ -125,7 +135,10 @@ class BirdMap {
 	}
 
 	createMarker(latLng, icon) {
-		const marker = L.marker(latLng, { icon });
+		const marker = L.marker(latLng, {
+			icon,
+			riseOnHover: true
+		});
 		
 		marker.on('click', () => {
 			const position = marker.getLatLng();
@@ -136,21 +149,47 @@ class BirdMap {
 	}
 
 	createBird(latLng, bird) {
-		const icon = this.icons.blueIcon;
+		const icon = L.divIcon({
+			html: '<i class="fa-solid fa-dove fa-2x"></i>',
+			iconSize: [20, 20],
+			className: 'bird-icon'
+		});
 
 		const marker = this.createMarker(latLng, icon);
 
 		marker.birdId = bird.subId
 
 		marker.on('click', () => {
-			console.log(bird);
+			$('.overlay').html(`
+			<div class="expand-icon"></div>
+			<div class="content">
+				<div class="bird-name">${bird.name.com}</div>
+				<div class="science-name">${bird.name.sci}</div>
+				<div class="bird-img-wrapper">
+					<img class="bird-img" src="/duck.png">
+				</div>
+				<div class="location-wrapper">
+					<div class="location">Loc</div>
+					<div class="separator"><i class="fa-solid fa-circle"></i></div>
+					<div class="distance">${Unit.m2mi(marker.getLatLng().distanceTo(this.position)).toFixed(2)} mi</div>
+				</div>
+				<div class="description-wrapper">
+					<div class="description-header">Description:</div>
+					<div class="description-content">
+						Clark's grebe is a North American waterbird species in the grebe family. Until the 1980s, it was thought to be a pale morph of the western grebe, which it resembles in size, range, and behavior. Intermediates between the two species are known.
+					</div>
+			  </div>
+			</div>
+			`)
+			.removeAttr('hidden');
 		});
 
 		return marker;
 	}
 
 	setCurrPosition(latLng) {
-		this.map.panTo(latLng);
+		this.map.panToOffset(latLng, [window.innerWidth / 4, 0]);
+		// this.map.panTo(latLng);
 	}
 	
 	getCurrPosition() {
@@ -234,6 +273,13 @@ let mymap = null;
 let gps = null;
 
 window.addEventListener('load', async () => {
+
+	L.Map.prototype.panToOffset = function (latlng, offset, options) {
+		const x = this.latLngToContainerPoint(latlng).x - offset[0];
+		const y = this.latLngToContainerPoint(latlng).y - offset[1];
+		const point = this.containerPointToLatLng([x, y]);
+		return this.setView(point, this._zoom, { pan: options });
+	}
 
 	gps = new GPS();
 	mymap = new BirdMap('leaflet-map', await gps.getCurrentPosition(37.8039, -122.2591));
