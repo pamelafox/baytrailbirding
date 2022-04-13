@@ -86,13 +86,13 @@ module EbirdHelper
     d = 6371 * c * (miles ? 1 / 1.6 : 1)
   end
 
-  def getImageSrc(bird_data)
+  def getImageSrc(com, sci)
     img_src = 'never set'
     begin
-      img_src = getImageFromName(bird_data["comName"])
+      img_src = getImageFromName(com)
     rescue NoMethodError => e1
       begin
-        img_src = getImageFromName(bird_data["sciName"])
+        img_src = getImageFromName(sci)
       rescue NoMethodError => e2
         img_src = nil
       end
