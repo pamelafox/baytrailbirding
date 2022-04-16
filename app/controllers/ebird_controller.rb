@@ -8,7 +8,13 @@ class EbirdController < ApplicationController
     lat = params[:lat].to_f
     lng = params[:lng].to_f
     radius = (params[:radius] || 50).to_i
-    birds = getBirdData(lat, lng, radius);
+    hotspot = params[:hotspot]
+    birds = []
+    if hotspot
+      birds = getHotspotBirdData(hotspot);
+    else
+      birds = getBirdData(lat, lng, radius);
+    end
     render :json => birds
   end
   def bird #This will load in data for an individual bird
@@ -18,5 +24,12 @@ class EbirdController < ApplicationController
     render :json => {
       :img => img
     }  
-  end    
+  end
+  def hotspots
+    lat = params[:lat].to_f
+    lng = params[:lng].to_f
+    radius = (params[:radius] || 50).to_i
+    hotspots = getHotspotData(lat, lng, radius);
+    render :json => hotspots
+  end
 end

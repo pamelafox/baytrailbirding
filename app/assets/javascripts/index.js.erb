@@ -40,14 +40,14 @@ class Ebird {
 class BirdMap {
 	constructor(elementId, currentPosition) {
 
-		const tileLayerSource = 'https://{s}.tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token={accessToken}';
+		const tileLayerSource = 'https://a.tiles.mapbox.com/styles/v1/lohneswright/ciocejooj006obdnjhmd2x9qp/tiles/{z}/{x}/{y}?access_token={accessToken}';
 
 		const map = L.map(elementId).setView([37.42, -121.91], 13);
 
 		L.tileLayer(tileLayerSource, {
 			maxZoom: 22,
-			subdomains: 'abcd',
-			accessToken: 'xqHgJRZT75Q1ORgEeGK3PlEI0pJ6AJFSe8atWNYCpgOGhvO3YTuckshNKOzFqpDP',
+			// subdomains: 'abcd',
+			accessToken: 'pk.eyJ1IjoibG9obmVzd3JpZ2h0IiwiYSI6IngzbVlqNnMifQ.OwxjrBKoGXc60NB5x6GKzw',
 			attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
 
