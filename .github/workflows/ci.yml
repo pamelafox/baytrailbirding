@@ -55,9 +55,6 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: stylelint 
-      uses: actions-hub/stylelint@master
-
     - name: run ESLinting
       run: |
         npm run lint
