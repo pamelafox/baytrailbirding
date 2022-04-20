@@ -56,7 +56,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Run Pronto
-      run: pronto run -f github_status github_pr -c ${{github.sha}}
+      run: pronto run -f github_status github_pr -c origin/main --exit-code
       env:
         PRONTO_PULL_REQUEST_ID: ${{ steps.findPr.outputs.pr }}
         PRONTO_GITHUB_ACCESS_TOKEN: "${{ github.token }}"
