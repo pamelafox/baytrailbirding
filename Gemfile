@@ -62,6 +62,7 @@ group :test do
   gem 'database_cleaner' # required by Cucumber
   gem 'pronto'
   gem 'pronto-stylelint'
+  gem 'pronto-erb_lint'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
