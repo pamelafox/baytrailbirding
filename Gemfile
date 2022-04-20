@@ -60,6 +60,8 @@ group :test do
   gem 'cucumber-rails', :require => false
   gem 'cucumber-rails-training-wheels' # basic imperative step defs like "Then I should see..."
   gem 'database_cleaner' # required by Cucumber
+  gem 'pronto'
+  gem 'pronto-stylelint'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
