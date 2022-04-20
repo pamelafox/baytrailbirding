@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "color-hex-case": "upper",
+    "no-irregular-whitespace": true,
+    "rule-empty-line-before": "always"
+  }
+}
